@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BalikLog | Borrowing &amp; Lending Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>BalikLog<small>Borrowing &amp; Lending Tracker</small></h1>
+    <button class="primary" type="button" id="headerAddBtn">+ Add record</button>
+  </header>
+
+  <main>
+    <div id="dashboardScreen">
+      <section class="stats" aria-label="Record summary">
+        <div class="stat"><b id="sTotal">0</b><span>Total records</span></div>
+        <div class="stat wait"><b id="sNot">0</b><span>Not yet returned</span></div>
+        <div class="stat ok"><b id="sRet">0</b><span>Returned</span></div>
+        <div class="stat late"><b id="sLate">0</b><span>Overdue</span></div>
+      </section>
+
+      <section class="quick-actions" aria-label="Quick actions">
+        <button class="primary" type="button" id="addBtn">+ Add record</button>
+        <button type="button" id="viewRecordsBtn">View all records</button>
+      </section>
+
+      <section class="panel" id="recordsPanel">
+        <h2>Records</h2>
+        <div class="tools">
+          <label class="search-label">Search records<input id="q" type="search" placeholder="Search by item or person"></label>
+          <label>Type
+            <select id="fDir" aria-label="Filter by type">
+              <option value="all">All types</option><option value="lent">Lent</option><option value="borrowed">Borrowed</option>
+            </select>
+          </label>
+          <label>Status
+            <select id="fStatus" aria-label="Filter by status">
+              <option value="all">All statuses</option><option value="not">Not yet returned</option><option value="ret">Returned</option><option value="late">Overdue</option>
+            </select>
+          </label>
+          <label>Sort
+            <select id="sortOrder" aria-label="Sort by expected return date">
+              <option value="soonest">Expected return: soonest first</option><option value="latest">Expected return: latest first</option>
+            </select>
+          </label>
+        </div>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Item</th><th>Person</th><th>Type</th><th>Borrowed</th><th>Expected return</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel form-screen" id="recordScreen" hidden>
+      <div class="screen-heading">
+        <h2 id="formTitle">Add new record</h2>
+        <button type="button" id="closeFormBtn">Back to dashboard</button>
+      </div>
+      <form id="f" novalidate>
+        <label>Item name *<input id="item" placeholder="Enter item name" maxlength="60"></label>
+        <label>Person’s name *<input id="person" placeholder="Enter the person’s name" maxlength="40"></label>
+        <label>Transaction type *
+          <select id="dir"><option value="lent">Lent to someone</option><option value="borrowed">Borrowed from someone</option></select>
+        </label>
+        <label>Date borrowed / lent *<input id="dBorrow" type="date"></label>
+        <label>Expected return date *<input id="dReturn" type="date"></label>
+        <fieldset class="status-field">
+          <legend>Return status</legend>
+          <label><input type="radio" name="returnStatus" value="not" checked> Not yet returned</label>
+          <label><input type="radio" name="returnStatus" value="ret"> Returned</label>
+        </fieldset>
+        <label class="notes-field">Notes (optional)<textarea id="notes" rows="3" maxlength="300" placeholder="Add any helpful details"></textarea></label>
+        <div class="acts form-actions">
+          <button class="primary" type="submit" id="saveBtn">Save record</button>
+          <button type="button" id="clearBtn">Clear form</button>
+          <button type="button" id="cancelBtn">Cancel</button>
+        </div>
+        <p class="err" id="err" role="alert"></p>
+      </form>
+    </section>
+  </main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
