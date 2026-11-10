@@ -3,13 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<<<<<<< HEAD
 <title>BalikLog | Borrowing &amp; Lending Tracker</title>
+=======
+<title>BalikLog</title>
+>>>>>>> origin/main
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="wrap">
   <header>
+<<<<<<< HEAD
     <h1>BalikLog<small>Borrowing &amp; Lending Tracker</small></h1>
     <button class="primary" type="button" id="headerAddBtn">+ Add record</button>
   </header>
@@ -86,6 +91,56 @@
     </section>
   </main>
 </div>
+=======
+    <h1>BalikLog<small>Track what you lend and borrow, and get it back.</small></h1>
+  </header>
+
+  <section class="stats" aria-label="Dashboard">
+    <div class="stat"><b id="sTotal">0</b><span>Total records</span></div>
+    <div class="stat wait"><b id="sNot">0</b><span>Not yet returned</span></div>
+    <div class="stat ok"><b id="sRet">0</b><span>Returned</span></div>
+    <div class="stat late"><b id="sLate">0</b><span>Overdue</span></div>
+  </section>
+
+  <section class="panel">
+    <h2 id="formTitle">Add a record</h2>
+    <form id="f" novalidate>
+      <label>Item<input id="item" placeholder="e.g. Scientific calculator" maxlength="60"></label>
+      <label>Person’s name<input id="person" placeholder="e.g. Marco" maxlength="40"></label>
+      <label>Type
+        <select id="dir"><option value="lent">I lent it</option><option value="borrowed">I borrowed it</option></select>
+      </label>
+      <label>Date borrowed<input id="dBorrow" type="date"></label>
+      <label>Expected return date<input id="dReturn" type="date"></label>
+      <div class="acts">
+        <button class="primary" type="submit" id="saveBtn">Add record</button>
+        <button type="button" id="cancelBtn" hidden>Cancel edit</button>
+      </div>
+      <p class="err" id="err" role="alert"></p>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Records</h2>
+    <div class="tools">
+      <input id="q" type="search" placeholder="Search by item or person" aria-label="Search records">
+      <select id="fStatus" aria-label="Filter by status">
+        <option value="all">All statuses</option><option value="not">Not yet returned</option><option value="ret">Returned</option><option value="late">Overdue</option>
+      </select>
+      <select id="fDir" aria-label="Filter by type">
+        <option value="all">Lent and borrowed</option><option value="lent">I lent</option><option value="borrowed">I borrowed</option>
+      </select>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Item</th><th>Person</th><th>Borrowed</th><th>Due</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+>>>>>>> origin/main
 <script src="script.js"></script>
 </body>
 </html>
