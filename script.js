@@ -1,3 +1,5 @@
+// Browser-side app controller: loads records, updates the dashboard, and handles user actions.
+// Optional starter data can be supplied as window.BALIKLOG_SEED_DATA before this script loads.
 const KEY = "baliklog.records";
 const APP_CONFIG = {
   seedRecords: window.BALIKLOG_SEED_DATA || []
@@ -6,9 +8,11 @@ let records = [];
 let editId = null;
 const $ = id => document.getElementById(id);
 
+// Date helpers use local calendar dates to avoid shifting a date across time zones.
 function today(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
 function iso(d){ const z = n => String(n).padStart(2,"0"); return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate()); }
 
+// Coerce optional starter data into the shape used by the app.
 function normalizeSeedRecord(record){
   if (!record || typeof record !== "object") return null;
   return {
@@ -29,6 +33,7 @@ function getSeedRecords(){
     : [];
 }
 
+// Persist records in this browser; starter data is used only when no saved data is available.
 function load(){
   try {
     const raw = localStorage.getItem(KEY);
@@ -39,6 +44,7 @@ function load(){
 }
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(records)); } catch (e) { /* ignore */ } }
 
+// Display helpers used to calculate status, format dates, escape record text, and draw action icons.
 function status(r){
   if (r.returned) return "ret";
   return r.due < iso(today()) ? "late" : "not";
@@ -52,6 +58,7 @@ function esc(s){ return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":
 function pencilIcon(){ return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm14.71-9.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" fill="currentColor"/></svg>'; }
 function trashIcon(){ return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-9 0l1 14h8l1-14M10 10v6M14 10v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
 
+// Rebuild the summary counts and visible table from current records and filter controls.
 function render(){
   const counts = {ret:0,late:0,not:0};
   records.forEach(r => counts[status(r)]++);
@@ -89,6 +96,7 @@ function render(){
   }).join("");
 }
 
+// Reset the editor and switch between the overview and record-entry screens.
 function resetForm(){
   editId = null;
   $("f").reset();
@@ -128,6 +136,7 @@ function showRecords(){
   $("recordsPanel").scrollIntoView({behavior:"smooth"});
 }
 
+// Validate submitted form values, then create or update a record and refresh the overview.
 $("f").addEventListener("submit", e => {
   e.preventDefault();
   const item = $("item").value.trim(), person = $("person").value.trim();
@@ -145,6 +154,7 @@ $("f").addEventListener("submit", e => {
   save(); resetForm(); render(); showDashboard();
 });
 
+// Wire static buttons and sidebar navigation to the corresponding screen actions.
 $("clearBtn").addEventListener("click", resetForm);
 $("cancelBtn").addEventListener("click", () => { resetForm(); showDashboard(); });
 $("closeFormBtn").addEventListener("click", () => { resetForm(); showDashboard(); });
@@ -159,6 +169,7 @@ document.querySelector(".side-nav").addEventListener("click", e => {
   if (button.dataset.nav === "add") { resetForm(); showRecordForm(); }
 });
 
+// Delegate table actions so buttons continue to work after render() replaces the table rows.
 $("rows").addEventListener("click", e => {
   const b = e.target.closest("button[data-a]");
   if (!b) return;
@@ -180,6 +191,7 @@ $("rows").addEventListener("click", e => {
   }
 });
 
+// Re-render immediately when search, filters, or sort order change; then initialize the app.
 ["q","fStatus","fDir","sortOrder"].forEach(id => $(id).addEventListener("input", render));
 
 load(); resetForm(); render();
