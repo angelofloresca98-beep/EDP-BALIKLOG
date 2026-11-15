@@ -1,23 +1,40 @@
 const KEY = "baliklog.records";
+const APP_CONFIG = {
+  seedRecords: window.BALIKLOG_SEED_DATA || []
+};
 let records = [];
 let editId = null;
 const $ = id => document.getElementById(id);
 
 function today(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
 function iso(d){ const z = n => String(n).padStart(2,"0"); return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate()); }
-function shift(days){ const d = today(); d.setDate(d.getDate()+days); return iso(d); }
+
+function normalizeSeedRecord(record){
+  if (!record || typeof record !== "object") return null;
+  return {
+    id: Number(record.id) || Date.now() + Math.random(),
+    item: String(record.item || "").trim(),
+    person: String(record.person || "").trim(),
+    dir: record.dir === "borrowed" ? "borrowed" : "lent",
+    borrowed: record.borrowed || iso(today()),
+    due: record.due || record.borrowed || iso(today()),
+    returned: Boolean(record.returned),
+    notes: record.notes || ""
+  };
+}
+
+function getSeedRecords(){
+  return Array.isArray(APP_CONFIG.seedRecords)
+    ? APP_CONFIG.seedRecords.map(normalizeSeedRecord).filter(Boolean)
+    : [];
+}
 
 function load(){
   try {
     const raw = localStorage.getItem(KEY);
     if (raw) { records = JSON.parse(raw); return; }
   } catch (e) { /* storage unavailable */ }
-  records = [
-    {id:1,item:"Scientific calculator",person:"Marco",dir:"lent",borrowed:shift(-10),due:shift(-3),returned:false},
-    {id:2,item:"Umbrella",person:"Ana",dir:"lent",borrowed:shift(-2),due:shift(3),returned:false},
-    {id:3,item:"Extension cord",person:"Kuya Ben",dir:"lent",borrowed:shift(-14),due:shift(-7),returned:true},
-    {id:4,item:"Engineering textbook",person:"Liza",dir:"borrowed",borrowed:shift(-5),due:shift(2),returned:false}
-  ];
+  records = getSeedRecords();
   save();
 }
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(records)); } catch (e) { /* ignore */ } }
@@ -32,6 +49,8 @@ function fmt(s){
   return new Date(y,m-1,d).toLocaleDateString("en-PH",{month:"short",day:"numeric",year:"numeric"});
 }
 function esc(s){ return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function pencilIcon(){ return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm14.71-9.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" fill="currentColor"/></svg>'; }
+function trashIcon(){ return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-9 0l1 14h8l1-14M10 10v6M14 10v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
 
 function render(){
   const counts = {ret:0,late:0,not:0};
@@ -64,8 +83,8 @@ function render(){
       '<td data-label="Borrowed">' + fmt(r.borrowed) + '</td><td data-label="Expected return">' + fmt(r.due) + '</td><td data-label="Status">' + badge + '</td>' +
       '<td><div class="acts">' +
       '<button data-a="toggle" data-id="' + r.id + '">' + (r.returned ? "Mark not returned" : "Mark returned") + '</button>' +
-      '<button data-a="edit" data-id="' + r.id + '">Edit</button>' +
-      '<button class="danger" data-a="del" data-id="' + r.id + '">Delete</button>' +
+      '<button class="icon-btn" data-a="edit" data-id="' + r.id + '" aria-label="Edit record" title="Edit">' + pencilIcon() + '</button>' +
+      '<button class="icon-btn danger" data-a="del" data-id="' + r.id + '" aria-label="Delete record" title="Delete">' + trashIcon() + '</button>' +
       '</div></td></tr>';
   }).join("");
 }
@@ -83,13 +102,30 @@ function resetForm(){
 function showDashboard(){
   $("recordScreen").hidden = true;
   $("dashboardScreen").hidden = false;
+  setActiveNav("overview", "Overview");
   window.scrollTo({top:0, behavior:"smooth"});
 }
 function showRecordForm(){
   $("dashboardScreen").hidden = true;
   $("recordScreen").hidden = false;
+  setActiveNav("add", $("formTitle").textContent);
   window.scrollTo({top:0, behavior:"smooth"});
   $("item").focus();
+}
+function setActiveNav(name, title){
+  document.querySelectorAll(".nav-link").forEach(button => {
+    const active = button.dataset.nav === name;
+    button.classList.toggle("active", active);
+    if (active) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
+  });
+  $("pageTitle").textContent = title;
+}
+function showRecords(){
+  $("dashboardScreen").hidden = false;
+  $("recordScreen").hidden = true;
+  setActiveNav("records", "All records");
+  $("recordsPanel").scrollIntoView({behavior:"smooth"});
 }
 
 $("f").addEventListener("submit", e => {
@@ -114,7 +150,14 @@ $("cancelBtn").addEventListener("click", () => { resetForm(); showDashboard(); }
 $("closeFormBtn").addEventListener("click", () => { resetForm(); showDashboard(); });
 $("addBtn").addEventListener("click", () => { resetForm(); showRecordForm(); });
 $("headerAddBtn").addEventListener("click", () => { resetForm(); showRecordForm(); });
-$("viewRecordsBtn").addEventListener("click", () => $("recordsPanel").scrollIntoView({behavior:"smooth"}));
+$("viewRecordsBtn").addEventListener("click", showRecords);
+document.querySelector(".side-nav").addEventListener("click", e => {
+  const button = e.target.closest("button[data-nav]");
+  if (!button) return;
+  if (button.dataset.nav === "overview") showDashboard();
+  if (button.dataset.nav === "records") showRecords();
+  if (button.dataset.nav === "add") { resetForm(); showRecordForm(); }
+});
 
 $("rows").addEventListener("click", e => {
   const b = e.target.closest("button[data-a]");

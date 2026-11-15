@@ -8,13 +8,43 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>BalikLog<small>Borrowing &amp; Lending Tracker</small></h1>
-    <button class="primary" type="button" id="headerAddBtn">+ Add record</button>
-  </header>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Main navigation">
+    <a class="sidebar-brand" href="index.html" aria-label="BalikLog home">
+      <span class="brand-mark" aria-hidden="true">B</span>
+      <span>BalikLog<small>Borrowing tracker</small></span>
+    </a>
+    <p class="nav-caption">WORKSPACE</p>
+    <nav class="side-nav">
+      <button class="nav-link active" type="button" data-nav="overview">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9zm0 7h6v-4H4v4zm10 0h6v-9h-6v9zm0-16v4h6V4h-6z" fill="currentColor"/></svg>
+        <span>Overview</span>
+      </button>
+      <button class="nav-link" type="button" data-nav="records">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm2 4v2h10V8H7zm0 5v2h10v-2H7z" fill="currentColor"/></svg>
+        <span>All records</span>
+      </button>
+      <button class="nav-link" type="button" data-nav="add">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-7-7h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Add a record</span>
+      </button>
+    </nav>
+    <div class="sidebar-note">
+      <span class="note-icon" aria-hidden="true">↗</span>
+      <p>Keep track of what you lend and borrow.</p>
+    </div>
+  </aside>
 
-  <main>
+  <div class="main-area">
+    <header>
+      <div>
+        <p class="eyebrow">BORROWING &amp; LENDING TRACKER</p>
+        <h1 id="pageTitle">Overview</h1>
+      </div>
+      <button class="primary" type="button" id="headerAddBtn">+ Add record</button>
+    </header>
+
+    <main>
     <div id="dashboardScreen">
       <section class="stats" aria-label="Record summary">
         <div class="stat"><b id="sTotal">0</b><span>Total records</span></div>
@@ -84,7 +114,8 @@
         <p class="err" id="err" role="alert"></p>
       </form>
     </section>
-  </main>
+    </main>
+  </div>
 </div>
 <script src="script.js"></script>
 </body>
