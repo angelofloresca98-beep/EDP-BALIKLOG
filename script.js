@@ -143,7 +143,7 @@ $("f").addEventListener("submit", e => {
   const borrowed = $("dBorrow").value, due = $("dReturn").value;
   const returned = $("f").elements.returnStatus.value === "ret";
   const notes = $("notes").value.trim();
-  if (!item || !person || !borrowed || !due) { $("err").textContent = "Fill in the item, the person’s name, and both dates."; return; }
+  if (!item || !person || !borrowed || !due) { $("err").textContent = "Make sure to fill in the following fields: item, the person’s name, and both dates."; return; }
   if (due < borrowed) { $("err").textContent = "The expected return date can’t be before the borrowed date."; return; }
   if (editId) {
     const r = records.find(x => x.id === editId);
